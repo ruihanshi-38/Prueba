@@ -1,63 +1,66 @@
-<script>
-    // Usamos un evento para asegurar que el DOM esté cargado
-    document.addEventListener('DOMContentLoaded', () => {
-        const inputField = document.getElementById('input-text');
-        const outputDiv = document.getElementById('output-text');
-        const processBtn = document.getElementById('process-btn');
-        const copyBtn = document.getElementById('copy-btn');
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Humanizador Pro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { darkMode: 'class' }
 
-        // Diccionario de términos
-        const dictionary = {
-            "adicionalmente": "además",
-            "implementar": "hacer",
-            "proporcionar": "dar",
-            "exhaustivo": "completo",
-            "consecuentemente": "así que",
-            "optimizar": "mejorar",
-            "utilizar": "usar",
-            "fundamental": "clave",
-            "en la actualidad": "hoy",
-            "notable": "gran",
-            "posee": "tiene",
-            "con el fin de": "para",
-            "determinar": "ver",
-            "no obstante": "pero",
-            "asimismo": "también",
-            "por consiguiente": "entonces",
-            "en base a": "según",
-            "paradigma": "modelo"
-        };
+        function procesar() {
+            const input = document.getElementById('input-text').value;
+            const output = document.getElementById('output-text');
+            const copyBtn = document.getElementById('copy-btn');
 
-        // Escuchar el clic del botón
-        processBtn.onclick = function() {
-            const text = inputField.value;
-            
-            if (!text.trim()) {
-                outputDiv.innerHTML = '<span class="text-red-400 italic">Escribe algo primero...</span>';
+            if (!input.trim()) {
+                output.innerText = "Por favor, escribe algo...";
                 return;
             }
 
-            let result = text;
+            const dic = {
+                "adicionalmente": "además", "implementar": "hacer", "proporcionar": "dar",
+                "utilizar": "usar", "fundamental": "clave", "notable": "gran",
+                "no obstante": "pero", "asimismo": "también", "optimizar": "mejorar"
+            };
 
-            // Procesar el reemplazo
-            Object.keys(dictionary).forEach(word => {
-                const regex = new RegExp(`\\b${word}\\b`, 'gi');
-                result = result.replace(regex, (match) => {
-                    return `<span class="highlight" style="background-color: #fef08a; border-bottom: 2px solid #facc15; border-radius: 4px; padding: 0 2px;">${dictionary[word.toLowerCase()]}</span>`;
-                });
-            });
-
-            // Inyectar el resultado
-            outputDiv.innerHTML = result;
-            copyBtn.classList.remove('hidden');
-        };
-
-        // Limpiar si se borra el input
-        inputField.oninput = function() {
-            if (this.value === "") {
-                outputDiv.innerHTML = '<span class="text-slate-400 italic">El resultado aparecerá aquí...</span>';
-                copyBtn.classList.add('hidden');
+            let texto = input;
+            for (let word in dic) {
+                let regex = new RegExp("\\b" + word + "\\b", "gi");
+                texto = texto.replace(regex, `<span style="background-color: #fef08a; color: black; border-radius: 4px; padding: 2px;">${dic[word]}</span>`);
             }
-        };
-    });
-</script>
+
+            output.innerHTML = texto;
+            copyBtn.style.display = 'block';
+        }
+
+        function toggleDark() {
+            document.documentElement.classList.toggle('dark');
+        }
+    </script>
+</head>
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white min-h-screen p-6">
+
+    <div class="max-w-2xl mx-auto space-y-6">
+        <div class="flex justify-between items-center">
+            <h1 class="text-3xl font-bold text-indigo-600">Humanizador</h1>
+            <button onclick="toggleDark()" class="p-2 bg-gray-200 dark:bg-gray-700 rounded-lg text-sm">🌓 Cambiar Modo</button>
+        </div>
+
+        <textarea id="input-text" class="w-full h-40 p-4 border rounded-xl dark:bg-gray-800 dark:border-gray-700 outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Pega tu texto aquí..."></textarea>
+        
+        <button onclick="procesar()" class="w-full py-4 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 transition-colors">
+            SIMPLIFICAR VOCABULARIO
+        </button>
+
+        <div class="p-4 border rounded-xl bg-white dark:bg-gray-800 dark:border-gray-700">
+            <div class="flex justify-between mb-2">
+                <span class="text-xs font-bold uppercase text-gray-500">Resultado:</span>
+                <button id="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('output-text').innerText)" style="display:none" class="text-indigo-500 text-xs font-bold">Copiar</button>
+            </div>
+            <div id="output-text" class="whitespace-pre-wrap leading-relaxed"></div>
+        </div>
+    </div>
+
+</body>
+</html>
