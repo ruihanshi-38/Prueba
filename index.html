@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Humanizador Pro</title>
+    <title>Humanizador Pro - Diccionario Extendido</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = { darkMode: 'class' }
@@ -18,42 +18,73 @@
                 return;
             }
 
-            // DICCIONARIO AMPLIADO (IA -> Humano)
+            // DICCIONARIO DE SUSTANTIVOS Y TÉRMINOS COMPLEJOS -> SIMPLES
             const dic = {
+                // Sustantivos Abstractos y Complejos
+                "inefable": "imposible de explicar",
+                "melancolía": "tristeza",
+                "vacuidad": "vacío",
+                "otrora": "antes",
+                "paradigma": "modelo",
+                "metodología": "forma de hacer las cosas",
+                "herramientas": "utilidades",
+                "incertidumbre": "duda",
+                "vicisitudes": "problemas",
+                "elocuencia": "buena comunicación",
+                "estratagema": "truco",
+                "procrastinación": "dejar las cosas para después",
+                "resiliencia": "capacidad de aguantar",
+                "discrepancia": "desacuerdo",
+                "amalgama": "mezcla",
+                "excedente": "lo que sobra",
+                "preeminencia": "importancia",
+                "connotación": "sentido",
+                "repercusión": "efecto",
+                "magnitud": "tamaño",
+                "celeridad": "rapidez",
+                "exhaustividad": "detalle",
+                "idiosincrasia": "forma de ser",
+
+                // Sustantivos de Objetos/Conceptos IA
+                "dispositivo": "aparato",
+                "funcionalidad": "función",
+                "implementación": "puesta en marcha",
+                "optimización": "mejora",
+                "notificación": "aviso",
+                "interfaz": "pantalla",
+                "colaboración": "ayuda",
+
+                // Adjetivos y Verbos (para mantener la coherencia)
                 "adicionalmente": "además",
                 "implementar": "hacer",
                 "proporcionar": "dar",
                 "utilizar": "usar",
                 "fundamental": "clave",
-                "notable": "gran",
                 "no obstante": "pero",
                 "asimismo": "también",
-                "optimizar": "mejorar",
-                "determinar": "ver",
                 "posee": "tiene",
-                "actualmente": "hoy",
-                "consecuentemente": "entonces",
-                "exhaustivo": "completo",
-                "mediante": "con",
-                "finalizar": "terminar"
+                "determinar": "ver",
+                "finalizar": "terminar",
+                "mediante": "con"
             };
 
             let texto = input;
+            let cambios = 0;
 
-            // Esta es la parte clave: reemplaza sin importar mayúsculas/minúsculas
-            for (let word in dic) {
-                // 'gi' significa: g (global, todas las veces) e i (insensitive, ignora mayúsculas)
+            // Ordenamos por longitud para evitar errores de reemplazo
+            const palabrasOrdenadas = Object.keys(dic).sort((a, b) => b.length - a.length);
+
+            for (let word of palabrasOrdenadas) {
                 let regex = new RegExp("\\b" + word + "\\b", "gi");
-                
-                // Reemplazamos la palabra aburrida por la divertida resaltada
-                texto = texto.replace(regex, `<span class="bg-yellow-200 dark:bg-yellow-600 dark:text-white px-1 rounded shadow-sm font-medium">${dic[word]}</span>`);
+                if (regex.test(texto)) {
+                    texto = texto.replace(regex, `<span class="bg-yellow-200 dark:bg-yellow-600 dark:text-white px-1 rounded shadow-sm font-medium">${dic[word]}</span>`);
+                    cambios++;
+                }
             }
 
-            // Si no hubo cambios, avisamos
-            if (texto === input) {
-                output.innerHTML = texto + "<br><br><p class='text-xs text-indigo-500 italic'>* El texto ya era bastante sencillo, no se detectaron palabras complejas.</p>";
-            } else {
-                output.innerHTML = texto;
+            output.innerHTML = texto;
+            if (cambios === 0) {
+                output.innerHTML += "<br><br><p class='text-xs text-indigo-500 italic'>* No se detectaron palabras complejas.</p>";
             }
             
             copyBtn.classList.remove('hidden');
@@ -70,7 +101,7 @@
         <div class="flex justify-between items-center">
             <div>
                 <h1 class="text-3xl font-extrabold text-indigo-600 dark:text-indigo-400">Humanizador</h1>
-                <p class="text-sm text-slate-500">Simplifica el lenguaje de la IA</p>
+                <p class="text-sm text-slate-500">Simplifica sustantivos y términos complejos</p>
             </div>
             <button onclick="toggleDark()" class="p-2 bg-white dark:bg-slate-800 shadow-sm border border-slate-200 dark:border-slate-700 rounded-xl text-lg hover:scale-110 transition-transform">
                 🌓
@@ -78,9 +109,9 @@
         </div>
 
         <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl shadow-xl border border-slate-100 dark:border-slate-700">
-            <textarea id="input-text" class="w-full h-40 p-4 bg-slate-50 dark:bg-slate-900 border-none rounded-xl outline-none focus:ring-2 focus:ring-indigo-500 text-lg" placeholder="Prueba con: 'Adicionalmente, debemos implementar un plan exhaustivo utilizando herramientas...'"></textarea>
+            <textarea id="input-text" class="w-full h-48 p-4 bg-slate-50 dark:bg-slate-900 border-none rounded-xl outline-none focus:ring-2 focus:ring-indigo-500 text-lg" placeholder="Prueba con: 'La metodología posee una gran incertidumbre debido a las vicisitudes'"></textarea>
             
-            <button onclick="procesar()" class="w-full mt-4 py-4 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 shadow-lg shadow-indigo-200 dark:shadow-none transition-all active:scale-95">
+            <button onclick="procesar()" class="w-full mt-4 py-4 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 shadow-lg active:scale-95 transition-all">
                 SIMPLIFICAR VOCABULARIO
             </button>
         </div>
